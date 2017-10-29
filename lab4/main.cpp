@@ -3,7 +3,7 @@
 #include <fstream>
 
 int main(int argc, char* argv[]) {
-    if (argv[1] != nullptr && argv[2] != nullptr){
+    if (argc != 3){
         std::string inputFile(argv[1]);
         std::string outputFile(argv[2]);
 

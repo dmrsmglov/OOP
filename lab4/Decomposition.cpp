@@ -13,7 +13,7 @@ Decomposition::Decomposition(uint64_t x) {
     }
 }
 
-bool Decomposition::checkDecomposition() {
+bool Decomposition::checkDecomposition() const{
     uint64_t result = 1;
     for (auto div : divisors){
         result *= div;
@@ -21,7 +21,7 @@ bool Decomposition::checkDecomposition() {
     return result == number;
 }
 
-std::string Decomposition::getDecomposition() {
+std::string Decomposition::getDecomposition() const{
     std::string decomposition = std::to_string(number) + " = ";
     for (int i = 0; i < divisors.size() - 1; ++i){
         decomposition += std::to_string(divisors[i]) + " * ";
