@@ -1,16 +1,12 @@
 #include <thread>
 #include <iostream>
-#include "Decomposition.h"
+#include "Factorization.h"
 #include "Task.h"
 
 void Task::start() {
-    std::cout << "How many threads do you want use to calculate factorization?\nEnter a number from 1 to 8\n";
-    unsigned long numberOfThreads;
-    std::cin >> numberOfThreads;
-    std::vector<std::thread> myLittleThreads(numberOfThreads);
-    std::cout << "You can enter 'exit', 'pause' or 'resume'\n";
+    std::vector<std::thread> threadPool(numberOfThreads);
     for (int i = 0; i < numberOfThreads; ++i) {
-        myLittleThreads[i] = std::thread(&Task::consumer, this);
+        threadPool[i] = std::thread(&Task::consumer, this);
     }
     std::thread prod(&Task::producer, this);
     while (!taskDone) {
@@ -32,7 +28,7 @@ void Task::start() {
         }
     }
     for (int i = 0; i < numberOfThreads; ++i) {
-        myLittleThreads[i].join();
+        threadPool[i].join();
     }
     prod.join();
 }
@@ -70,6 +66,12 @@ void Task::consumer() {
                 ul.unlock();
                 doTask(number);
                 ul.lock();
+                if (exit) {
+                    taskDone = true;
+                }
+                if (pause) {
+                    pauseExecution();
+                }
             }
             notifiedConsumer = false;
         }
@@ -91,7 +93,7 @@ void Task::clearQueue() {
 void Task::naturalExit() {
     std::lock_guard<std::mutex> lg(outStreamMutex);
     if (!exit) {
-        std::cout << "Please, enter any symbol to finish the program\n";
+        notify();
         exit = true;
     }
 }
@@ -103,19 +105,16 @@ void Task::pauseExecution() {
     }
 }
 
+void Task::printResult(std::string result){
+    std::lock_guard<std::mutex> lg(outStreamMutex);
+    outStream << result;
+}
+
 void Task::doTask(uint64_t number) {
-    Decomposition decomposition(number);
-    if (decomposition.checkDecomposition()) {
-        std::lock_guard<std::mutex> lg(outStreamMutex);
-        outStream << decomposition.getDecomposition();
-        outStream.flush();
+    Factorization factorization(number);
+    if (factorization.checkFactorization()) {
+        printResult(factorization.getFactorization());
     } else {
-        std::cerr << "Wrong decomposition for " + std::to_string(decomposition.getNumber()) + "\n";
-    }
-    if (exit) {
-        taskDone = true;
-    }
-    if (pause) {
-        pauseExecution();
+        std::cerr << "Wrong factorization for " + std::to_string(factorization.getNumber()) + "\n";
     }
 }

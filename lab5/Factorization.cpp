@@ -1,8 +1,8 @@
-#include "Decomposition.h"
+#include "Factorization.h"
 #include <iostream>
 #include <mutex>
 
-Decomposition::Decomposition(uint64_t x) {
+Factorization::Factorization(uint64_t x) {
     number = x;
     for (uint64_t div = 2; div * div <= x; div++) {
         while (!(x % div)) {
@@ -15,11 +15,11 @@ Decomposition::Decomposition(uint64_t x) {
     }
 }
 
-uint64_t Decomposition::getNumber() const {
+uint64_t Factorization::getNumber() const {
     return number;
 }
 
-bool Decomposition::checkDecomposition() const {
+bool Factorization::checkFactorization() const {
     uint64_t result = 1;
     for (auto div : divisors) {
         result *= div;
@@ -27,11 +27,11 @@ bool Decomposition::checkDecomposition() const {
     return result == number;
 }
 
-std::string Decomposition::getDecomposition() const {
-    std::string decomposition = std::to_string(number) + " = ";
+std::string Factorization::getFactorization() const {
+    std::string factorization = std::to_string(number) + " = ";
     for (int i = 0; i < divisors.size() - 1; ++i) {
-        decomposition += std::to_string(divisors[i]) + " * ";
+        factorization += std::to_string(divisors[i]) + " * ";
     }
-    decomposition += std::to_string(divisors.back()) + "\n";
-    return decomposition;
+    factorization += std::to_string(divisors.back()) + "\n";
+    return factorization;
 }

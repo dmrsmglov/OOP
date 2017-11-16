@@ -4,13 +4,13 @@
 #include <cstdint>
 #include <string>
 
-class Decomposition {
+class Factorization {
 public:
-    explicit Decomposition(uint64_t);
+    explicit Factorization(uint64_t);
 
-    std::string getDecomposition() const;
+    std::string getFactorization() const;
 
-    bool checkDecomposition() const;
+    bool checkFactorization() const;
     std::uint64_t getNumber() const;
 
 private:
