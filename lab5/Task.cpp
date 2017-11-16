@@ -75,9 +75,13 @@ void Task::consumer() {
             }
             notifiedConsumer = false;
         }
-        taskDone = true;
         if (!exit) {
-            naturalExit();
+            std::lock_guard<std::mutex> lg(completeMutex);
+            ++completedThreads;
+            if (completedThreads == numberOfThreads){
+                taskDone = true;
+                naturalExit();
+            }
         }
     } else {
         std::cerr << "OutputFile error\n";

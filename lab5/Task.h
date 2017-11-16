@@ -21,12 +21,13 @@ private:
     void doTask(uint64_t);
     void printResult(std::string);
 
-    std::mutex lockQueueMutex, pauseExecutionMutex, outStreamMutex;
+    std::mutex lockQueueMutex, pauseExecutionMutex, outStreamMutex, completeMutex;
     std::condition_variable condVarQueue, condVarPause;
     std::queue<uint64_t> numbers;
     std::ofstream &outStream;
     std::ifstream &inStream;
     unsigned int numberOfThreads;
+    unsigned int completedThreads = 0;
     bool pause = false;
     bool exit = false;
     bool notifiedConsumer = false;
