@@ -4,12 +4,12 @@
 
 class Worker : public Observer{
 public:
-    Worker(std::ifstream &in, std::ofstream &out):
-        inStream(in), outStream(out){};
+    Worker(std::string &in, std::string &out):
+        inFileName(in), outFileName(out){};
     void update() const override;
     void go() const;
 private:
-    std::ifstream &inStream;
-    std::ofstream &outStream;
+    std::string &inFileName;
+    std::string &outFileName;
 };
 

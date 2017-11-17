@@ -34,57 +34,49 @@ void Task::start() {
 }
 
 void Task::producer() {
-    if (inStream.good()) {
-        uint64_t number;
-        while (inStream >> number) {
-            {
-                std::unique_lock<std::mutex> ul(lockQueueMutex);
-                if (exit) {
-                    break;
-                }
-                numbers.push(number);
+    while (!reader.isEnd()) {
+        {
+            uint64_t number = reader.read();
+            std::unique_lock<std::mutex> ul(lockQueueMutex);
+            if (exit) {
+                break;
             }
-            notifiedConsumer = true;
-            condVarQueue.notify_all();
+            numbers.push(number);
         }
-        endOfFile = true;
-    } else {
-        std::cerr << "InputFile error\n";
+        notifiedConsumer = true;
+        condVarQueue.notify_all();
     }
+    endOfFile = true;
 }
 
 void Task::consumer() {
-    if (outStream.good()) {
-        std::unique_lock<std::mutex> ul(lockQueueMutex);
-        while (!endOfFile || !numbers.empty()) {
-            while (!notifiedConsumer) {
-                condVarQueue.wait(ul);
-            }
-            while (!numbers.empty()) {
-                uint64_t number = numbers.front();
-                numbers.pop();
-                ul.unlock();
-                doTask(number);
-                ul.lock();
-                if (exit) {
-                    taskDone = true;
-                }
-                if (pause) {
-                    pauseExecution();
-                }
-            }
-            notifiedConsumer = false;
+    std::unique_lock<std::mutex> ul(lockQueueMutex);
+    while (!endOfFile || !numbers.empty()) {
+        while (!notifiedConsumer) {
+            condVarQueue.wait(ul);
         }
-        if (!exit) {
-            std::lock_guard<std::mutex> lg(completeMutex);
-            ++completedThreads;
-            if (completedThreads == numberOfThreads){
+        while (!numbers.empty()) {
+            uint64_t number = numbers.front();
+            numbers.pop();
+            ul.unlock();
+            doTask(number);
+            ul.lock();
+            if (exit) {
                 taskDone = true;
-                naturalExit();
+            }
+            if (pause) {
+                pauseExecution();
             }
         }
-    } else {
-        std::cerr << "OutputFile error\n";
+        notifiedConsumer = false;
+    }
+    if (!exit) {
+        std::lock_guard<std::mutex> lg(completeMutex);
+        ++completedThreads;
+        if (completedThreads == numberOfThreads) {
+            taskDone = true;
+            naturalExit();
+        }
     }
 }
 
@@ -104,14 +96,22 @@ void Task::naturalExit() {
 
 void Task::pauseExecution() {
     std::unique_lock<std::mutex> ul(pauseExecutionMutex);
+    ++pausedThreads;
+    if (pausedThreads == numberOfThreads) {
+        writer.close();
+    }
     while (pause) {
         condVarPause.wait(ul);
     }
+    if (pausedThreads == numberOfThreads) {
+        writer.appendOpen();
+    }
+    --pausedThreads;
 }
 
-void Task::printResult(std::string result){
+void Task::printResult(std::string result) {
     std::lock_guard<std::mutex> lg(outStreamMutex);
-    outStream << result;
+    writer.print(result);
 }
 
 void Task::doTask(uint64_t number) {
