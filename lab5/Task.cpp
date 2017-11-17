@@ -60,13 +60,13 @@ void Task::consumer() {
             numbers.pop();
             ul.unlock();
             doTask(number);
-            ul.lock();
             if (exit) {
                 taskDone = true;
             }
             if (pause) {
                 pauseExecution();
             }
+            ul.lock();
         }
         notifiedConsumer = false;
     }
