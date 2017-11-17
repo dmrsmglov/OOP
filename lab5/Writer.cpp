@@ -1,6 +1,6 @@
 #include "Writer.h"
 
-void Writer::print(std::string &note) {
+void Writer::print(std::string &note) const{
     out << note;
 }
 

@@ -6,7 +6,7 @@ class Writer{
 public:
     Writer(std::string &fileName, std::ofstream &streamName):
             out(streamName), file(fileName){};
-    void print(std::string &note);
+    void print(std::string &note) const;
     void close();
     void appendOpen();
 private:
