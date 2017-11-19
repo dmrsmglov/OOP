@@ -21,6 +21,7 @@ void Task::start() {
             pause = true;
         }
         if (signal == "resume") {
+            std::lock_guard<std::mutex> lg(pauseExecutionMutex);
             if (pause) {
                 pause = false;
                 condVarPause.notify_all();
