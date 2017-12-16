@@ -19,65 +19,6 @@ public:
         }
     }
 
-    class ArrayIterator : std::iterator<std::random_access_iterator_tag,
-    value_type>{
-    public:
-        explicit ArrayIterator (value_type *ptr):
-        data_ptr_(ptr){}
-        ArrayIterator &operator ++(){
-            data_ptr_++;
-            return *this;
-        }
-        ArrayIterator operator ++ (int){
-            return ArrayIterator(data_ptr_++);
-        }
-        ArrayIterator &operator --(){
-            data_ptr_--;
-            return *this;
-        }
-        ArrayIterator operator --(int){
-            return ArrayIterator(data_ptr_--);
-        }
-        ArrayIterator &operator += (size_type x){
-            return *(this -> data_ptr_ += x);
-        }
-        ArrayIterator operator + (size_type x){
-            return ArrayIterator(this -> data_ptr_ + x);
-        }
-        ArrayIterator &operator -= (size_type x){
-            return *(this -> data_ptr_ -= x);
-        }
-        ArrayIterator operator - (size_type x){
-            return ArrayIterator(this -> data_ptr_ - x);
-        }
-        bool operator < (const ArrayIterator &other) const{
-            return this -> data_ptr_ < other.data_ptr_;
-        }
-        bool operator > (const ArrayIterator &other) const{
-            return other < *this;
-        }
-        bool operator == (const ArrayIterator &other) const{
-            return !(*this < other) && !(other < *this);
-        }
-        bool operator != (const ArrayIterator &other) const{
-            return (*this < other) || (other < *this);
-        }
-        bool operator <= (const ArrayIterator &other) const{
-            return !(other < *this);
-        }
-        bool operator >= (const ArrayIterator &other) const{
-            return !(*this < other);
-        }
-        value_type *operator ->() const {
-            return data_ptr_;
-        }
-        value_type &operator *() const {
-            return *data_ptr_;
-        }
-    private:
-        value_type *data_ptr_;
-    };
-
     DynamicArray(const DynamicArray &other){
         size_ = other.size();
         capacity_ = other.capacity();
@@ -137,34 +78,6 @@ public:
 
     size_type capacity() const{
         return capacity_;
-    }
-
-    template<class ...Args>
-    void emplace_back(Args... newValue){
-        if (size_ == capacity_){
-            capacity_ *= 2;
-            value_type * newData = new value_type[capacity_];
-            memcpy(newData, data_, size_);
-            deleteData();
-            data_ = newData;
-        }
-        data_[size_++] = new value_type(newValue);
-    }
-
-    template<class ...Args>
-    void emplace(ArrayIterator iterator, Args... newValue){
-        ArrayIterator curIterator = end();
-        while (curIterator != iterator){
-            (*curIterator)
-        }
-    }
-
-    ArrayIterator begin(){
-        return ArrayIterator(data_);
-    }
-
-    ArrayIterator end(){
-        return ArrayIterator(data_ + size_);
     }
 
     void printDynamicArray(){
