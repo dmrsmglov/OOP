@@ -23,7 +23,7 @@ public:
         size_ = other.size();
         capacity_ = other.capacity();
         data_ = new value_type[capacity_];
-        memcpy(data_, other.data_, capacity_);
+        memcpy(data_, other.data_, size_);
     }
 
     DynamicArray(DynamicArray &&other) noexcept {
@@ -54,7 +54,7 @@ public:
             size_ = other.size_;
             capacity_ = other.capacity_;
             data_ = new value_type[capacity_];
-            memcpy(data_, other.data_, capacity_);
+            memcpy(data_, other.data_, size_);
         }
         return *this;
     }
