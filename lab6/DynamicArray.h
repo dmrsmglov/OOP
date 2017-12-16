@@ -80,13 +80,6 @@ public:
         return capacity_;
     }
 
-    void printDynamicArray(){
-        for (size_type i = 0; i < size_; ++i){
-            std::cout << data_[i] << " ";
-        }
-        std::cout << std::endl;
-    }
-
     void pushBack(const value_type &value){
         if (capacity_ / sizeof(value_type ) > size_){
             data_[size_++] = value;
