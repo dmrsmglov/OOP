@@ -13,7 +13,7 @@ public:
     explicit DynamicArray(const size_type &size = 0, const value_type &value = value_type()):
             capacity_(size * sizeof(value_type)), size_(size)
     {
-        data_ = new value_type[capacity_];
+        data_ = new value_type[size_];
         for (size_type i = 0; i < size_; ++i){
             data_[i] = value;
         }
@@ -22,7 +22,7 @@ public:
     DynamicArray(const DynamicArray &other){
         size_ = other.size();
         capacity_ = other.capacity();
-        data_ = new value_type[capacity_];
+        data_ = new value_type[size_];
         memcpy(data_, other.data_, size_);
     }
 
@@ -53,7 +53,7 @@ public:
             deleteData();
             size_ = other.size_;
             capacity_ = other.capacity_;
-            data_ = new value_type[capacity_];
+            data_ = new value_type[size_];
             memcpy(data_, other.data_, size_);
         }
         return *this;
@@ -84,7 +84,7 @@ public:
         if (capacity_ / sizeof(value_type ) > size_){
             data_[size_++] = value;
         } else{
-            value_type *newData_ = new value_type[capacity_ * 2];
+            value_type *newData_ = new value_type[size_ * 2];
             memcpy(newData_, data_, size_);
             capacity_ *= 2;
             newData_[size_++] = value;
